@@ -39,8 +39,45 @@
         font-weight: 500;
         font-style: normal;
       }
+
+      /* YouTube Lite Player */
+      .lite-youtube-fallback {
+        aspect-ratio: 16 / 9; /* matches YouTube player */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        gap: 1em;
+        padding: 1em;
+        background-color: #000;
+        color: #fff;
+        text-decoration: none;
+      }
+
+      /* right-facing triangle "Play" icon */
+      .lite-youtube-fallback::before {
+        display: block;
+        content: "";
+        border: solid transparent;
+        border-width: 2em 0 2em 3em;
+        border-left-color: red;
+      }
+
+      .lite-youtube-fallback:hover::before {
+        border-left-color: #fff;
+      }
+
+      .lite-youtube-fallback:focus {
+        outline: 2px solid red;
+      }
     </style>
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
+
+    <!-- YouTube Lite Player -->
+    <script
+      type="module"
+      src="https://cdn.jsdelivr.net/npm/@justinribeiro/lite-youtube@1/lite-youtube.min.js"
+    ></script>
   </body>
 </html>

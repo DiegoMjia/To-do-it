@@ -1,29 +1,41 @@
 <script setup lang="ts">
-import '../LitComponent/Buttom-theme'
-import { ref } from 'vue';
+import "../../LitComponent/Buttom-theme";
+import { ref } from "vue";
+
+//storeToRefs(themeStore): Convierte las variables del store en reactivas.
+import { storeToRefs } from "pinia";
+import { useThemeStore } from "../../Stores/Theme";
 
 const body = ref<HTMLElement>(document.body);
-const isLightTheme = ref<boolean>(false);
 
-const themeChanger = (e: any) => {
-  isLightTheme.value = !isLightTheme.value;
-  console.log(e.detail.active);
-  body.value?.classList.toggle('active')
-}
+//Lamamos el estado de la store.
+const theme = useThemeStore();
+
+const { isLightTheme } = storeToRefs(theme);
+
+const themeChanger = () => {
+  theme.toggleTheme();
+  body.value?.classList.toggle("active", isLightTheme.value);
+};
 </script>
 
 <template>
   <div class="navbar">
     <div class="Container">
-      <div class="logo" style="padding-left: 10px;">
-        <div class="logoImg" style="font-size: 60px; font-weight: bold;">X</div>
-        <h1 style="display: inline-block; font-size: 40px; font-weight: bold;">TO-DO-IT</h1>
+      <div class="logo" style="padding-left: 10px">
+        <div class="logoImg" style="font-size: 60px; font-weight: bold">X</div>
+        <h1 style="display: inline-block; font-size: 40px; font-weight: bold">
+          TO-DO-IT
+        </h1>
       </div>
       <ul>
         <li><a href="#">CONTACTO</a></li>
         <li><a href="#">ACERCA DE NOSOTROS</a></li>
         <li><a href="#">DONACIONES</a></li>
-        <theme-button :active="isLightTheme" @click="themeChanger"></theme-button>
+        <theme-button
+          :active="isLightTheme"
+          @click="themeChanger"
+        ></theme-button>
         <span class="line">|</span>
         <button class="login">SIGN IN / SIGN UP</button>
       </ul>
@@ -39,7 +51,6 @@ const themeChanger = (e: any) => {
   justify-content: space-between;
   align-items: center;
   background-color: #15171c;
-  transition: background-color 0.5s ease;
   position: relative;
   z-index: 100;
 }
@@ -74,7 +85,6 @@ a:hover {
   gap: 10px;
 }
 
-
 ul {
   display: flex;
   height: 100%;
@@ -106,7 +116,6 @@ body.active {
     color: #15171c;
 
     border-bottom: 1px solid rgb(0, 0, 0);
-
   }
 
   a:hover {

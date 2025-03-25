@@ -27,8 +27,6 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
-  background-color: #15171c;
-  transition: background-color 0.5s ease;
 }
 
 h1 {
