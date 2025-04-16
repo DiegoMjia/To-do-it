@@ -19,7 +19,7 @@
             consequuntur facilis nemo, voluptas accusantium.
           </p>
         </section>
-        <button>¡Emepezar!</button>
+        <button>¡Empezar!</button>
       </section>
       <lite-youtube
         videoid="H0Sbna9rxog"

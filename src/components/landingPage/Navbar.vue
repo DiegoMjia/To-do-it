@@ -7,6 +7,7 @@ import { storeToRefs } from "pinia";
 import { useThemeStore } from "../../Stores/Theme";
 
 const body = ref<HTMLElement>(document.body);
+const emit = defineEmits(["openDialog"]);
 
 //Lamamos el estado de la store.
 const theme = useThemeStore();
@@ -17,13 +18,17 @@ const themeChanger = () => {
   theme.toggleTheme();
   body.value?.classList.toggle("active", isLightTheme.value);
 };
+
+const handlerLoginClick = () => {
+  emit("openDialog");
+};
 </script>
 
 <template>
   <div class="navbar">
     <div class="Container">
       <div class="logo" style="padding-left: 10px">
-        <div class="logoImg" style="font-size: 60px; font-weight: bold">X</div>
+        <div style="font-size: 60px; font-weight: bold">X</div>
         <h1 style="display: inline-block; font-size: 40px; font-weight: bold">
           TO-DO-IT
         </h1>
@@ -32,18 +37,24 @@ const themeChanger = () => {
         <li><a href="#">CONTACTO</a></li>
         <li><a href="#">ACERCA DE NOSOTROS</a></li>
         <li><a href="#">DONACIONES</a></li>
+
         <theme-button
           :active="isLightTheme"
           @click="themeChanger"
         ></theme-button>
         <span class="line">|</span>
-        <button class="login">SIGN IN / SIGN UP</button>
+        <button class="login" @click="handlerLoginClick">
+          SIGN IN / SIGN UP
+        </button>
+
+        <!-- Sesion dialog -->
+        <dialog></dialog>
       </ul>
     </div>
   </div>
 </template>
 
-<style>
+<style scoped>
 .Container {
   border-bottom: 1px solid rgb(255, 255, 255);
   margin: 10px;
@@ -53,6 +64,10 @@ const themeChanger = () => {
   background-color: #15171c;
   position: relative;
   z-index: 100;
+}
+
+::v-deep(.theme-toggle__inner-moon) {
+  position: sticky;
 }
 
 .line {
@@ -103,6 +118,12 @@ a {
   text-decoration: none;
 }
 
+.theme-toggle__inner-moon {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+}
+
 body.active {
   background-color: #f0f0f0;
   color: #15171c;
@@ -120,6 +141,10 @@ body.active {
 
   a:hover {
     color: #5281f8;
+  }
+
+  .line {
+    color: #15171c;
   }
 }
 </style>
