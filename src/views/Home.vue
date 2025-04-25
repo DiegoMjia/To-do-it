@@ -21,7 +21,12 @@ defineComponent({
   <div>
     <Navbar @openDialog="openDialog" />
     <Mainv1 />
-    <dialog ref="dialog" class="modal" style="margin: 20px; overflow: hidden;">
+    <dialog
+      ref="dialog"
+      class="modal"
+      style="margin: 20px; overflow: hidden"
+      closedby="any"
+    >
       <StartSesion />
     </dialog>
   </div>
@@ -33,5 +38,15 @@ dialog {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  z-index: 200;
+  box-shadow: 0 0 0 1000px rgba(0, 0, 0, 0.5);
+}
+
+body.active {
+  .modal {
+    background-color: rgba(185, 185, 185, 0.818);
+    color: black;
+    border: 1px solid #ffffff00;
+  }
 }
 </style>

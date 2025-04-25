@@ -1,4 +1,5 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+</script>
 
 <template>
   <div>
@@ -30,8 +31,11 @@
   </div>
 </template>
 
-<style>
+<style scoped>
 button {
+  height: 60px;
+  cursor: pointer;
+  width: 200px;
   background-color: #414bb2;
 }
 

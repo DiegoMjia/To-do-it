@@ -8,6 +8,16 @@ const routes: Array<RouteRecordRaw> = [
     name: "Home",
     component: Home,
   },
+  {
+    path: "/CreateAccount",
+    name: "CreateAccount",
+    component: () => import("../components/login/CreateAccount.vue"),
+  },
+  {
+    path: "/tasks",
+    name: "tasks",
+    component: () => import("../views/task/MainTask.vue"),
+  }
 ];
 
 const router = createRouter({
