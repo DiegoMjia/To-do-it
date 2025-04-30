@@ -30,7 +30,7 @@ const handlerLoginClick = () => {
       <div class="logo" style="padding-left: 10px">
         <div style="font-size: 60px; font-weight: bold">X</div>
         <h1 style="display: inline-block; font-size: 40px; font-weight: bold">
-          TO-DO-IT
+          TO-DO-X!
         </h1>
       </div>
       <ul>
