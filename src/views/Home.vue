@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { defineComponent, ref } from "vue";
-import Navbar from "../components/landingPage/Navbar.vue";
+import Navbar from "../components/landingPage/Header.vue";
 import Mainv1 from "../components/landingPage/Mainv1.vue";
 import StartSesion from "../components/login/StartSesion.vue";
 
