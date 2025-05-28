@@ -1,82 +1,145 @@
 <script setup lang="ts">
-const tasks = [
-  {
-    task: "comprar el pan",
-    priority: "🔴 alta",
-    date: "📅 2-05-2030",
-    status: "realizada",
-    icon: "✅",
-    description: "Lo voy a compra en el supermercado.",
-  },
-  {
-    task: "Ir a la playa",
-    priority: "🔴 alta",
-    date: "📅 2-05-2030",
-    status: "pendiente",
-    icon: "🐎",
-  },
-  {
-    task: "Comprar un teclado",
-    priority: "🟡 media",
-    date: "📅 2-05-2030",
-    status: "borrada",
-    icon: "🐎",
-    description: "Lo voy a compra en el supermercado.",
-  },
-  {
-    task: "Comprar lentejitas",
-    priority: "🟢 baja",
-    date: "📅 2-05-2030",
-    status: "realizada",
-    icon: "✅",
-  },
-  {
-    task: "Estudiar Vue.js",
-    priority: "🔴 alta",
-    date: "📅 3-05-2030",
-    status: "pendiente",
-    icon: "📚",
-  },
-  {
-    task: "Regar las plantas",
-    priority: "🟢 baja",
-    date: "📅 3-05-2030",
-    status: "realizada",
-    icon: "🪴",
-  },
-  {
-    task: "Llamar a la abuela",
-    priority: "🟡 media",
-    date: "📅 4-05-2030",
-    status: "pendiente",
-    icon: "📞",
-  },
-  {
-    task: "Hacer ejercicio",
-    priority: "🟡 media",
-    date: "📅 4-05-2030",
-    status: "pendiente",
-    icon: "🏋️",
-  },
-  {
-    task: "Lavar la ropa",
-    priority: "🔴 alta",
-    date: "📅 4-05-2030",
-    status: "borrada",
-    icon: "🧺",
-  },
-  {
-    task: "Escribir diario",
-    priority: "🟢 baja",
-    date: "📅 5-05-2030",
-    status: "realizada",
-    icon: "📓",
-  },
-];
+import { onMounted, ref, watch } from "vue";
+import { AppCreateTask } from "./Types/Create.task";
+import { reloadTasks } from "./ServicesTask/reload.task";
+import axios from "axios";
+const taskInfo = ref<AppCreateTask[]>([]);
+
+// Estado para controlar la edición de tareas
+const isEditing = ref(false);
+const currentEditTask = ref<AppCreateTask | null>(null);
+
+const emit = defineEmits(["addTaskSuggest", "editTask"]);
+
+const handlerAddTaskSuggest = async (valueParam: string, option: string) => {
+  const tasks = await reloadTasks();
+  if (tasks) {
+    taskInfo.value = tasks;
+  }
+  emit("addTaskSuggest", valueParam);
+};
+
+// Nueva función para editar una tarea
+const editTask = async (taskId: string) => {
+  try {
+    // Encontrar la tarea a editar
+    const taskToEdit = taskInfo.value.find(task => task.id === taskId);
+    if (taskToEdit) {
+      // Guardar la tarea actual para edición
+      currentEditTask.value = { ...taskToEdit };
+      // Emitir evento para abrir el modal de edición
+      emit("editTask", currentEditTask.value);
+    }
+  } catch (error) {
+    console.error("Error al preparar la tarea para edición:", error);
+  }
+};
+
+// Función para actualizar una tarea en la API
+const updateTask = async (taskId: string, updatedData: Partial<AppCreateTask>) => {
+  try {
+    const apiUrl = import.meta.env.VITE_API_URL;
+    await axios.patch(`${apiUrl}/${taskId}`, updatedData);
+    const tasks = await reloadTasks();
+    if (tasks) {
+      taskInfo.value = tasks;
+    }
+  } catch (error) {
+    console.error("Error al actualizar la tarea en la API:", error);
+  }
+};
+
+const reverseStatus = async (taskId: string) => {
+  try {
+    const apiUrl = import.meta.env.VITE_API_URL;
+    await axios.patch(`${apiUrl}/${taskId}`, {
+      status: "pendiente",
+    });
+    const tasks = await reloadTasks();
+    if (tasks) {
+      taskInfo.value = tasks;
+    }
+  } catch (error) {
+    console.error("Error al actualizar la tarea en la API:", error);
+  }
+};
+
+const chectTask = async (taskId: string) => {
+  try {
+    const apiUrl = import.meta.env.VITE_API_URL;
+    await axios.patch(`${apiUrl}/${taskId}`, {
+      status: "realizada",
+    });
+    const tasks = await reloadTasks();
+    if (tasks) {
+      taskInfo.value = tasks;
+    }
+  } catch (error) {
+    console.error("Error al actualizar la tarea en la API:", error);
+  }
+};
+
+const removeTaskCarriedOut = async (taskId: string) => {
+  try {
+    const apiUrl = import.meta.env.VITE_API_URL;
+    await axios.patch(`${apiUrl}/${taskId}`, {
+      status: "borrada",
+    });
+    const tasks = await reloadTasks();
+    if (tasks) {
+      taskInfo.value = tasks;
+    }
+  } catch (error) {
+    console.error("Error al actualizar la tarea en la API:", error);
+  }
+};
+
+const priorityIcons = {
+  Baja: "🟢",
+  Media: "🟡",
+  Alta: "🔴",
+};
+
+const getPriorityIcon = (priority: string) => {
+  return priorityIcons[priority as keyof typeof priorityIcons] || "";
+};
+
+onMounted(() => {
+  reloadTasks().then((tasks) => {
+    if (tasks) {
+      taskInfo.value = tasks as AppCreateTask[];
+    }
+  });
+});
+
+watch(
+  () => taskInfo.value,
+  (newValue) => {
+    if (newValue.length > 0) {
+      reloadTasks().then((tasks) => {
+        if (tasks) {
+          taskInfo.value = tasks as AppCreateTask[];
+        }
+      });
+    }
+  }
+);
 </script>
 
 <template>
-  <div class="gridContainer">
+  <!-- Primer caso: No hay tareas en absoluto -->
+  <div class="noTaskFound" v-if="taskInfo.length <= 0">
+    <h3>Aun sin tareas para mostrar.</h3>
+    <button
+      class="suggestAddTask"
+      @click="handlerAddTaskSuggest('AddTask', 'add')"
+    >
+      Agrega una tarea.
+    </button>
+  </div>
+
+  <!-- Hay tareas, mostramos la estructura principal -->
+  <div v-else class="gridContainer">
     <div
       class="titlePresentationContainer"
       style="text-align: start; padding: 15px"
@@ -84,73 +147,105 @@ const tasks = [
       <h2 class="title">
         <span style="font-size: 30px">🌟</span>Mira tus tareas
       </h2>
-      <div class="pendingTasks">
-        <h2>📋Tareas pendientes</h2>
-        <div
-          class="container"
-          v-for="task in tasks.filter((t) => t.status === 'pendiente')"
-          :key="task.task"
+
+      <!-- Sección de tareas pendientes -->
+      <h2>📋Tareas pendientes</h2>
+
+      <!-- Muestra mensaje si no hay tareas pendientes -->
+      <div
+        class="noTaskFound"
+        v-if="taskInfo.filter((t) => t.status === 'pendiente').length === 0"
+      >
+        <h3>Te quedaste sin tareas ¡Vaya ganador/a!🏆🏅</h3>
+        <button
+          class="suggestAddTask"
+          @click="handlerAddTaskSuggest('AddTask', 'add')"
         >
+          Agrega una tarea.
+        </button>
+      </div>
+
+      <!-- Lista de tareas pendientes -->
+      <div
+        class="pendingTasks"
+        v-for="task in taskInfo.filter((t) => t.status === 'pendiente')"
+        :key="task.id"
+      >
+        <div class="container">
           <span class="taskFixed">⌛</span>
           <div class="task">
-            <p>{{ task.task }}</p>
-            <p>{{ task.priority }}</p>
-            <p>{{ task.date }}</p>
+            <p>{{ task.title }}</p>
+            <p>
+              {{ task.priority }}
+              <span>{{ getPriorityIcon(task.priority) }}</span>
+            </p>
             <span class="description" v-if="task.description">{{
               task.description
             }}</span>
           </div>
           <div class="containerIcons">
-            <div class="refresh"></div>
-            <div class="edit"></div>
-            <div class="trash"></div>
+            <div class="checkTask" @click="chectTask(task.id!)"></div>
+            <div class="edit" @click="editTask(task.id!)"></div>
+            <div class="trash" @click="removeTaskCarriedOut(task.id!)"></div>
           </div>
-        </div>
-      </div>
-      <span class="titleSection">✏️Tareas realizadas</span>
-    </div>
-    <div class="taskCompleted content1">
-      <div
-        class="container"
-        v-for="task in tasks.filter((t) => t.status === 'realizada')"
-        :key="task.task"
-      >
-        <span class="taskFixed">✅</span>
-        <div class="task">
-          <p>{{ task.task }}</p>
-          <p>{{ task.priority }}</p>
-          <p>{{ task.date }}</p>
-          <span class="description" v-if="task.description">{{
-            task.description
-          }}</span>
-        </div>
-        <div class="containerIcons">
-          <div class="refresh"></div>
-          <div class="edit"></div>
-          <div class="trash"></div>
         </div>
       </div>
     </div>
 
-    <div class="trashTasks">
-      <h2>🗑️Tareas borradas</h2>
+    <!-- Sección de tareas realizadas -->
+    <div class="taskCompleted content1">
+      <h2
+        class="titleSection"
+        style="font-size: 30px"
+        v-if="taskInfo.filter((t) => t.status === 'realizada').length > 0"
+      >
+        ✏️Tareas realizadas
+      </h2>
       <div
         class="container"
-        v-for="task in tasks.filter((t) => t.status === 'borrada')"
-        :key="task.task"
+        v-for="task in taskInfo.filter((t) => t.status === 'realizada')"
+        :key="task.id"
       >
-        <span class="taskFixed">❌</span>
+        <span class="taskFixed">✅</span>
         <div class="task">
-          <p>{{ task.task }}</p>
-          <p>{{ task.priority }}</p>
-          <p>{{ task.date }}</p>
+          <p>{{ task.title }}</p>
+          <p>
+            {{ task.priority }}
+            <span>{{ getPriorityIcon(task.priority) }}</span>
+          </p>
           <span class="description" v-if="task.description">{{
             task.description
           }}</span>
         </div>
         <div class="containerIcons">
-          <div class="refresh"></div>
-          <div class="edit"></div>
+          <div class="refresh" @click="reverseStatus(task.id!)"></div>
+          <div class="edit" @click="editTask(task.id!)"></div>
+          <div class="trash" @click="removeTaskCarriedOut(task.id!)"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sección de tareas borradas (tenia planeado meterlas en otra seccion de la página, pero ya es demasiado tarde, no me da el tiempo).-->
+    <div
+      class="trashTasks"
+      v-if="taskInfo.filter((t) => t.status === 'borrada').length > 0"
+    >
+      <h2 style="font-size: 30px">🗑️Tareas borradas</h2>
+      <div
+        class="container"
+        v-for="task in taskInfo.filter((t) => t.status === 'borrada')"
+        :key="task.id"
+      >
+        <span class="taskFixed">❌</span>
+        <div class="task">
+          <p>{{ task.title }}</p>
+          <p>{{ task.priority }}</p>
+          <span class="description" v-if="task.description">{{
+            task.description
+          }}</span>
+        </div>
+        <div class="containerIcons">
+          <div class="edit" @click="editTask(task.id!)"></div>
           <div class="trash"></div>
         </div>
       </div>
@@ -158,126 +253,4 @@ const tasks = [
   </div>
 </template>
 
-<style scoped>
-.gridContainer {
-  font-weight: bolder;
-  font-size: 18px;
-  display: grid;
-  grid-template-rows: repeat(3, 1fr);
-  width: 80%;
-  height: 80%;
-  position: absolute;
-  top: 40%;
-  left: 60%;
-  transform: translate(-50%, -50%);
-}
-
-.description {
-  font-size: 10px;
-  align-items: center;
-  display: inline-flex;
-  position: absolute;
-  bottom: 0;
-  margin-bottom: 5px;
-}
-
-.trashTasks {
-  text-align: start;
-  padding: 15px;
-}
-
-.pendingTasks {
-  display: flex;
-  flex-direction: column;
-  margin-top: 10px;
-  text-align: left;
-  padding: 15px;
-  gap: 15px;
-}
-
-.taskFixed {
-  padding: 15px;
-  font-size: 25px;
-  display: flex;
-  align-items: center;
-}
-
-.content1 {
-  text-align: left;
-  padding: 15px;
-}
-
-.refresh {
-  cursor: pointer;
-  background-image: url("/src/assets/tasksIcons/ReloadIcons/reloadWhite.svg");
-  background-size: cover;
-  width: 30px;
-  height: 30px;
-}
-
-.edit {
-  cursor: pointer;
-  background-image: url("/src/assets/tasksIcons/pencilIcon/pencilWhite.svg");
-  background-size: cover;
-  width: 30px;
-  height: 30px;
-}
-
-.trash {
-  cursor: pointer;
-  background-image: url("/src/assets/tasksIcons/trashIcon/trashWhite.svg");
-  background-size: cover;
-  width: 30px;
-  height: 30px;
-}
-
-.containerIcons {
-  display: flex;
-  align-items: center;
-  margin-left: 20px;
-  gap: 15px;
-}
-
-.task {
-  display: flex;
-  width: 50%;
-  gap: 30px;
-  border: rgba(255, 255, 255, 0.358) 1px solid;
-  border-radius: 10px;
-  padding: 15px;
-}
-
-.task:has(.description) {
-  height: 70px;
-}
-
-.taskCompleted {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.container {
-  position: relative;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-
-.titleSection {
-  font-size: 20px;
-  margin-bottom: 20px;
-}
-
-.separator {
-  width: 99%;
-  height: 1px;
-  border: 1px solid rgba(255, 255, 255, 0.218);
-}
-
-.title {
-  margin-bottom: 25px;
-}
-</style>
+<style scoped src="./../../assets/CSS/components/ShowTask.css"></style>

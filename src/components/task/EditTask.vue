@@ -1,8 +1,14 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
-import type { ITask } from "./Types/Create.task";
+import { onMounted, ref, watch } from "vue";
+import type { ITask, AppCreateTask } from "./Types/Create.task";
 import { reloadTasks } from "./ServicesTask/reload.task";
 import axios from "axios";
+
+// Propiedades recibidas del componente padre
+const props = defineProps<{
+  task: AppCreateTask;
+  show: boolean;
+}>();
 
 const now = new Date();
 const yyyy = now.getFullYear();
@@ -14,10 +20,11 @@ const min = String(now.getMinutes()).padStart(2, "0");
 const minDateTime = ref(`${yyyy}-${mm}-${dd}T${hh}:${min}`);
 const selectedDateTime = ref("");
 
-const emit = defineEmits(["addTask", "closeModaltask"]);
+const emit = defineEmits(["updateTask", "closeEditModal"]);
 
-const taskCode = ref<string>(`UHC${0 + 1}`);
-
+// Referencias reactivas para los campos de la tarea
+const taskId = ref<string>("");
+const taskCode = ref<string>("");
 const taskTitle = ref<string>("");
 const taskDescription = ref<string>("");
 const taskPriority = ref<string>("Baja");
@@ -25,15 +32,32 @@ const status = ref<string>("pendiente");
 const completed = ref<boolean>(false);
 const isActive = ref<boolean>(true);
 
-const data = ref<ITask>();
+// Observar cambios en la prop task para actualizar los campos
+watch(
+  () => props.task,
+  (newTask) => {
+    if (newTask) {
+      taskId.value = newTask.id || "";
+      taskCode.value = newTask.code;
+      taskTitle.value = newTask.title;
+      taskDescription.value = newTask.description;
+      taskPriority.value = newTask.priority;
+      status.value = newTask.status;
+      completed.value = newTask.is_completed;
+      isActive.value = newTask.isActive || true;
+    }
+  },
+  { immediate: true }
+);
 
-const addTask = (option: string) => {
+const updateTask = async (option: string) => {
   if (option === "Guardar") {
     if (!taskTitle.value) {
       alert("Por favor, ingrese un título para la tarea.");
       return;
     }
-    data.value = {
+
+    const updatedTask: ITask = {
       code: taskCode.value,
       title: taskTitle.value,
       description: taskDescription.value,
@@ -43,56 +67,49 @@ const addTask = (option: string) => {
       isActive: isActive.value,
     };
 
-    const responseTask = postTask(data.value);
-
-    if (!responseTask) {
-      console.error("Error al guardar la tarea", responseTask);
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL;
+      await axios.patch(`${apiUrl}/${taskId.value}`, updatedTask);
+      
+      // Recargar tareas y notificar al componente padre
+      const tasks = await reloadTasks();
+      emit("updateTask", tasks);
+      
+      // Cerrar el modal
+      closeEditModal("Cancel");
+    } catch (error) {
+      console.error("Error al actualizar la tarea:", error);
     }
-
-    emit("addTask", data.value);
-    reloadTasks().then(tasks => {
-      console.log("Tareas actualizadas después de agregar:", tasks);
-    });
-    // Llamamos a reloadTasks y esperamos su resultado
+  } else {
+    closeEditModal("Cancel");
   }
-  closeModalTask("Cancel");
-  return false;
 };
 
-const closeModalTask = (data: string) => {
-  emit("closeModaltask", data);
-};
-
-const postTask = async (data: ITask) => {
-  const response = await axios
-    .post("http://localhost:3000/task", data)
-    .catch((error) => {
-      throw new Error("Error al guardar la tarea " + error);
-    });
-  return response;
+const closeEditModal = (data: string) => {
+  emit("closeEditModal", data);
 };
 
 onMounted(() => {
   window.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
-      closeModalTask("Cancel");
+      closeEditModal("Cancel");
     } else if (event.key === "Enter") {
-      addTask("Guardar");
+      updateTask("Guardar");
     }
   });
 });
 </script>
 
 <template>
-  <div class="taskContainer">
+  <div class="taskContainer" v-if="show">
     <div class="taskContent">
       <div class="title">
         <span
-          class="iconAddTask"
+          class="iconEditTask"
           style="font-size: 50px; color: #414bb2; padding-right: 10px"
-          >+</span
+          >✏️</span
         >
-        <h2 style="font-size: 40px; display: inline-block">Agregar tarea</h2>
+        <h2 style="font-size: 40px; display: inline-block">Editar tarea</h2>
       </div>
       <h2>Titulo</h2>
       <input
@@ -115,6 +132,14 @@ onMounted(() => {
           <option value="Alta">🔴Alta</option>
         </select>
       </form>
+      <form>
+        <label for="status">Estado de la tarea</label>
+        <select id="status" name="status" v-model="status">
+          <option value="pendiente">⌛ Pendiente</option>
+          <option value="realizada">✅ Realizada</option>
+          <option value="borrada">❌ Borrada</option>
+        </select>
+      </form>
       <h2>Fecha de entrega</h2>
       <input
         type="datetime-local"
@@ -126,11 +151,11 @@ onMounted(() => {
         <button
           class="cancelTask"
           style="background-color: transparent"
-          @click="closeModalTask('Cancel')"
+          @click="closeEditModal('Cancel')"
         >
           Cancelar
         </button>
-        <button class="saveTask" @click="addTask('Guardar')">Guardar</button>
+        <button class="saveTask" @click="updateTask('Guardar')">Guardar</button>
       </div>
     </div>
   </div>
@@ -138,7 +163,7 @@ onMounted(() => {
 
 <style scoped>
 .taskContainer {
-  height: 600px;
+  height: 670px;
   width: 500px;
   background-color: rgb(32, 31, 31);
   border: 1px solid #ffffff52;
@@ -160,7 +185,7 @@ form {
   width: 100%;
 }
 
-#menu {
+#menu, #status {
   width: 70%;
   padding: 5px;
   display: inline-block;

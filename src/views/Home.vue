@@ -20,7 +20,7 @@ defineComponent({
 <template>
   <div>
     <Navbar @openDialog="openDialog" />
-    <Mainv1 />
+    <Mainv1 />    
     <dialog
       ref="dialog"
       class="modal"

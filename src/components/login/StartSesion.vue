@@ -9,8 +9,6 @@ const credentials = reactive({
 
 
 const registerAccount = async () => {
-  console.log('¿Esta entrando a la funcion?');
-  console.log(credentials.email, credentials.password);
   if (
     credentials.email.length > 0 &&
     credentials.password.length > 0 &&

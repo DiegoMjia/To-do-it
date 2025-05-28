@@ -48,7 +48,6 @@
 
 body {
     font-family: sans-serif;
-    text-transform: capitalize;
 }
 
 .container {

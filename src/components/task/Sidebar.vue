@@ -2,6 +2,7 @@
 import { ref } from "vue";
 import logOutWhite from "../../assets/icons/logOutWhite.svg";
 import deleteAccountWhite from "../../assets/SidebarIcons/DeleteAccount/deleteAccountWhite.svg";
+import trashIcon from "../../assets/tasksIcons/trashIcon/trashWhite.svg";
 
 import addTaskWhite from "../../assets/SidebarIcons/addTaskWhite.svg";
 import showTaskWhite from "../../assets/SidebarIcons/showTaskWhite.svg";
@@ -10,10 +11,12 @@ import calendarWhite from "../../assets/SidebarIcons/calendarWhite.svg";
 const optionsAccount = [
   {
     option: "Eliminar cuenta",
+    code: "deleteAccount",
     icon: deleteAccountWhite,
   },
   {
     option: "Cerrar sesión",
+    code: "logOut",
     icon: logOutWhite,
   },
 ];
@@ -21,24 +24,32 @@ const optionsAccount = [
 const optionsNotes = [
   {
     option: "Agregar tarea",
+    code: "AddTask",
+    route: "/showTasks", // Ruta a la que se redirigirá al hacer clic en el menú "Agregar tarea"
     icon: addTaskWhite,
   },
   {
     option: "Mostrar tareas",
+    code: "ShowTask",
+    route: "/showTasks", // Ruta a la que se redirigirá al hacer clic en el menú "Mostrar tareas"
     icon: showTaskWhite,
   },
   {
     option: "Calendario",
+    code: "Calendar",
+    route: "/calendar", // Ruta a la que se redirigirá al hacer clic en el menú "Calendario"
     icon: calendarWhite,
   },
+  {
+    option: "Papelera",
+    code: "Trash",
+    route: "/trashTask", // Ruta a la que se redirigirá al hacer clic en el menú "Papelera
+    icon: trashIcon,
+  }
 ];
 
 const showOptions = ref(false);
 const emit = defineEmits(['option']);
-
-const toggleOptions = () => {
-  showOptions.value = !showOptions.value;
-};
 
 const handlerOptions = (option: string) => {
   emit('option', option.toString());
@@ -47,7 +58,7 @@ const handlerOptions = (option: string) => {
 
 <template>
   <div class="sideContainer" ref="sideContainer">
-    <div class="headerSide" @click="toggleOptions">
+    <div class="headerSide">
       <section class="accountInfo">
         <div class="iconsUser"></div>
         <p style="margin-left: 40px">Username</p>
@@ -61,14 +72,18 @@ const handlerOptions = (option: string) => {
     </div>
     <div class="sidebarContent">
       <div class="sidebarGroup">
-        <p v-for="option in optionsNotes" @click="handlerOptions(option.option)">
+        <RouterLink
+          v-for="option in optionsNotes"
+          @click="handlerOptions(option.code)"
+          :to="option.route"
+          active-class="myActiveClass"
+        >
           <img :src="option.icon" alt="icon" />
           {{ option.option }}
-        </p>
+        </RouterLink>
       </div>
     </div>
   </div>
-  <!-- <div class="logo">X</div> -->
 </template>
 
 <style scoped>
@@ -118,13 +133,12 @@ const handlerOptions = (option: string) => {
 img {
   width: 20px;
   height: 20px;
-  margin-left: 5px;
+  margin: 5px 0 0 5px;
   object-fit: contain;
 }
 
 .optionsContainer {
   background-color: rgb(44, 44, 44);
-
   gap: 15px;
   position: absolute;
   z-index: 100;

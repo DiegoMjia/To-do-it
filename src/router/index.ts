@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import type { RouteRecordRaw } from "vue-router";
 import Home from "../views/Home.vue";
+import TrashComponent from "../components/task/TrashComponent.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -14,9 +15,14 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("../components/login/CreateAccount.vue"),
   },
   {
-    path: "/tasks",
+    path: "/showTasks",
     name: "tasks",
     component: () => import("../views/task/MainTask.vue"),
+  },
+  {
+    path: "/trashTask",
+    name: "trash",
+    component: TrashComponent
   }
 ];
 

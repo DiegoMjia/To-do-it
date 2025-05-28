@@ -21,7 +21,7 @@ import Footer from "../landingPage/Footer.vue"
             consequuntur facilis nemo, voluptas accusantium.
           </p>
         </section>
-        <button>¡Empezar!</button>
+        <RouterLink to="/showTasks">¡Empezar!</RouterLink>
       </section>
       <lite-youtube videoid="H0Sbna9rxog" class="PresentatioVideo"></lite-youtube>
     </div>
@@ -88,11 +88,19 @@ import Footer from "../landingPage/Footer.vue"
 
 
 <style scoped>
-button {
+a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   height: 60px;
   cursor: pointer;
   width: 200px;
   background-color: #414bb2;
+}
+
+a:hover {
+  background-color: #3e4593;
+  color: #fff;
 }
 
 .ContainerMain1 {
@@ -199,7 +207,6 @@ svg {
 }
 
 .description {
-  /*color: red;*/
   font-size: 16px;
   text-align: center;
   max-width: 600px;
