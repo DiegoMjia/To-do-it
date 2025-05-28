@@ -9,12 +9,23 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@primeuix/themes": "^1.0.3",
+    "@fullcalendar/core": "^6.1.17",
+    "@fullcalendar/daygrid": "^6.1.17",
+    "@fullcalendar/interaction": "^6.1.17",
+    "@fullcalendar/list": "^6.1.17",
+    "@fullcalendar/timegrid": "^6.1.17",
+    "@fullcalendar/vue3": "^6.1.17",
+    "@popperjs/core": "^2.11.8",
+    "@primeuix/themes": "^1.1.1",
+    "dayspan-vuetify": "^0.4.0",
     "express": "4.21.2",
+    "material-design-icons-iconfont": "^6.7.0",
     "pinia-plugin-persistedstate": "^4.2.0",
-    "primevue": "^4.3.3",
+    "primevue": "^4.3.4",
+    "v-calendar": "^3.1.2",
     "vue": "^3.5.13",
-    "vue-router": "^4.5.0"
+    "vue-router": "^4.5.0",
+    "vuetify": "^1.5.23"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.1",

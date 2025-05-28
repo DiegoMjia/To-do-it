@@ -8,6 +8,13 @@ const routes: Array<RouteRecordRaw> = [
     name: "Home",
     component: Home,
   },
+
+  {
+    path: "/calendario",
+    name: "Calendario",
+    component: () => import("../views/CalendarView.vue"),
+  },
+
   {
     path: "/CreateAccount",
     name: "CreateAccount",
@@ -17,7 +24,7 @@ const routes: Array<RouteRecordRaw> = [
     path: "/tasks",
     name: "tasks",
     component: () => import("../views/task/MainTask.vue"),
-  }
+  },
 ];
 
 const router = createRouter({

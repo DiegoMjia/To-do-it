@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { useRouter } from "vue-router";
 import logOutWhite from "../../assets/icons/logOutWhite.svg";
 import deleteAccountWhite from "../../assets/SidebarIcons/DeleteAccount/deleteAccountWhite.svg";
-
 import addTaskWhite from "../../assets/SidebarIcons/addTaskWhite.svg";
 import showTaskWhite from "../../assets/SidebarIcons/showTaskWhite.svg";
 import calendarWhite from "../../assets/SidebarIcons/calendarWhite.svg";
+
+const router = useRouter();
 
 const optionsAccount = [
   {
@@ -41,7 +43,11 @@ const toggleOptions = () => {
 };
 
 const handlerOptions = (option: string) => {
-  emit('option', option.toString());
+  if (option === "Calendario") {
+    router.push("/calendario");
+  } else {
+    emit('option', option.toString());
+  }
 };
 </script>
 

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+
 const tasks = [
   {
     task: "comprar el pan",
@@ -84,6 +85,10 @@ const tasks = [
       <h2 class="title">
         <span style="font-size: 30px">🌟</span>Mira tus tareas
       </h2>
+      
+      <div class="calendar-section">
+        <Calendario />
+      </div>
       <div class="pendingTasks">
         <h2>📋Tareas pendientes</h2>
         <div
@@ -170,6 +175,12 @@ const tasks = [
   top: 40%;
   left: 60%;
   transform: translate(-50%, -50%);
+}
+
+.calendar-section {
+  margin: 20px 0;
+  display: flex;
+  justify-content: flex-start;
 }
 
 .description {
