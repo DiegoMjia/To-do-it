@@ -23,7 +23,7 @@ const reverseStatus = async (taskId: string) => {
   try {
     const apiUrl = import.meta.env.VITE_API_URL;
     await axios.patch(`${apiUrl}/${taskId}`, {
-      status: "borrada",
+      status: "realizada",
     });
     const tasks = await reloadTasks();
     if (tasks) {
@@ -35,6 +35,7 @@ const reverseStatus = async (taskId: string) => {
 };
 </script>
 
+<!-- Sección de tareas borradas (tenia planeado meterlas en otra seccion de la página, pero ya es demasiado tarde, no me da el tiempo).-->
 <template>
   <Sidebar />
 
@@ -57,8 +58,8 @@ const reverseStatus = async (taskId: string) => {
         }}</span>
       </div>
       <div class="containerIcons">
-        <div class="refresh"></div>
-        <div class="trash" @click="reverseStatus(task.id!)"></div>
+        <div class="refresh" @click="reverseStatus(task.id!)"></div>
+        <div class="trash"></div>
       </div>
     </div>
   </div>

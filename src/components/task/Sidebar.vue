@@ -25,34 +25,34 @@ const optionsNotes = [
   {
     option: "Agregar tarea",
     code: "AddTask",
-    route: "/showTasks", // Ruta a la que se redirigirá al hacer clic en el menú "Agregar tarea"
+    route: "/showTasks",
     icon: addTaskWhite,
   },
   {
-    option: "Mostrar tareas",
+    option: "Tus tareas",
     code: "ShowTask",
-    route: "/showTasks", // Ruta a la que se redirigirá al hacer clic en el menú "Mostrar tareas"
+    route: "/showTasks",
     icon: showTaskWhite,
   },
   {
     option: "Calendario",
     code: "Calendar",
-    route: "/calendar", // Ruta a la que se redirigirá al hacer clic en el menú "Calendario"
+    route: "/calendar",
     icon: calendarWhite,
   },
   {
     option: "Papelera",
     code: "Trash",
-    route: "/trashTask", // Ruta a la que se redirigirá al hacer clic en el menú "Papelera
+    route: "/trashTask",  
     icon: trashIcon,
-  }
+  },
 ];
 
 const showOptions = ref(false);
-const emit = defineEmits(['option']);
+const emit = defineEmits(["option"]);
 
 const handlerOptions = (option: string) => {
-  emit('option', option.toString());
+  emit("option", option.toString());
 };
 </script>
 

@@ -140,13 +140,6 @@ onMounted(() => {
           <option value="borrada">❌ Borrada</option>
         </select>
       </form>
-      <h2>Fecha de entrega</h2>
-      <input
-        type="datetime-local"
-        :min="minDateTime"
-        v-model="selectedDateTime"
-        placeholder="Ingrese la fecha de entrega de la tarea"
-      />
       <div class="buttonContainer">
         <button
           class="cancelTask"
@@ -163,7 +156,7 @@ onMounted(() => {
 
 <style scoped>
 .taskContainer {
-  height: 670px;
+  height: 580px;
   width: 500px;
   background-color: rgb(32, 31, 31);
   border: 1px solid #ffffff52;

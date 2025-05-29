@@ -20,10 +20,15 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("../views/task/MainTask.vue"),
   },
   {
+    path: "/calendar",
+    name: "calendar",
+    component: () => import("../views/task/CalendarView.vue"),
+  },
+  {
     path: "/trashTask",
     name: "trash",
     component: TrashComponent
-  }
+  },
 ];
 
 const router = createRouter({

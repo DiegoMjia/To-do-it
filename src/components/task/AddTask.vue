@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { ref } from "vue";
 import type { ITask } from "./Types/Create.task";
 import { reloadTasks } from "./ServicesTask/reload.task";
 import axios from "axios";
@@ -50,10 +50,10 @@ const addTask = (option: string) => {
     }
 
     emit("addTask", data.value);
-    reloadTasks().then(tasks => {
+
+    reloadTasks().then((tasks) => {
       console.log("Tareas actualizadas después de agregar:", tasks);
     });
-    // Llamamos a reloadTasks y esperamos su resultado
   }
   closeModalTask("Cancel");
   return false;
@@ -72,14 +72,10 @@ const postTask = async (data: ITask) => {
   return response;
 };
 
-onMounted(() => {
-  window.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") {
-      closeModalTask("Cancel");
-    } else if (event.key === "Enter") {
-      addTask("Guardar");
-    }
-  });
+window.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    closeModalTask("Cancel");
+  }
 });
 </script>
 
@@ -115,13 +111,6 @@ onMounted(() => {
           <option value="Alta">🔴Alta</option>
         </select>
       </form>
-      <h2>Fecha de entrega</h2>
-      <input
-        type="datetime-local"
-        :min="minDateTime"
-        v-model="selectedDateTime"
-        placeholder="Ingrese la fecha de entrega de la tarea"
-      />
       <div class="buttonContainer">
         <button
           class="cancelTask"
@@ -138,7 +127,7 @@ onMounted(() => {
 
 <style scoped>
 .taskContainer {
-  height: 600px;
+  height: 510px;
   width: 500px;
   background-color: rgb(32, 31, 31);
   border: 1px solid #ffffff52;

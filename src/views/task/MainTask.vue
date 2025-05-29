@@ -4,7 +4,10 @@ import AddTask from "../../components/task/AddTask.vue";
 import EditTask from "../../components/task/EditTask.vue";
 import { ref } from "vue";
 import ShowTasks from "../../components/task/ShowTasks.vue";
-import type { ITask, AppCreateTask } from "../../components/task/Types/Create.task";
+import type {
+  ITask,
+  AppCreateTask,
+} from "../../components/task/Types/Create.task";
 
 let showOptions = ref<boolean>(true);
 const taskModal = ref<HTMLElement | null>(null);
@@ -14,10 +17,12 @@ const showEditModal = ref<boolean>(false);
 const currentTask = ref<AppCreateTask | null>(null);
 
 const toggleOptions = ($event: string) => {
-  console.log(`desde el sidebar ${$event}`);
-  if ($event == "AddTask" || $event == "Cancel") {
-    showOptions.value = !showOptions.value;
+  if ($event == "Cancel") {
+    console.log($event);
+    showOptions.value = true;
     return false;
+  } else {
+    showOptions.value = false;
   }
 };
 
@@ -29,22 +34,17 @@ const handlerOptions = ($event: ITask) => {
   }
 };
 
-// Función para manejar la edición de tareas
 const handleEditTask = (task: AppCreateTask) => {
   currentTask.value = task;
-  showEditModal.value = true;
+  showEditModal.value = !showEditModal.value;
 };
 
-// Función para cerrar el modal de edición
 const closeEditModal = () => {
   showEditModal.value = false;
   currentTask.value = null;
 };
 
-// Función para actualizar las tareas después de editar
 const handleTaskUpdate = (tasks: AppCreateTask[]) => {
-  // Las tareas se actualizarán automáticamente en ShowTasks
-  // gracias al watch que ya tiene implementado
   closeEditModal();
 };
 </script>
@@ -60,7 +60,6 @@ const handleTaskUpdate = (tasks: AppCreateTask[]) => {
       ref="taskModal"
     />
 
-    <!-- Componente de edición de tareas -->
     <EditTask
       v-if="currentTask"
       :task="currentTask"
@@ -69,10 +68,7 @@ const handleTaskUpdate = (tasks: AppCreateTask[]) => {
       @closeEditModal="closeEditModal"
     />
 
-    <ShowTasks 
-      @addTaskSuggest="toggleOptions" 
-      @editTask="handleEditTask"
-    />
+    <ShowTasks @addTaskSuggest="toggleOptions" @editTask="handleEditTask" />
   </div>
 </template>
 

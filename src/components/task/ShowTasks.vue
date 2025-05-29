@@ -224,32 +224,6 @@ watch(
         </div>
       </div>
     </div>
-
-    <!-- Sección de tareas borradas (tenia planeado meterlas en otra seccion de la página, pero ya es demasiado tarde, no me da el tiempo).-->
-    <div
-      class="trashTasks"
-      v-if="taskInfo.filter((t) => t.status === 'borrada').length > 0"
-    >
-      <h2 style="font-size: 30px">🗑️Tareas borradas</h2>
-      <div
-        class="container"
-        v-for="task in taskInfo.filter((t) => t.status === 'borrada')"
-        :key="task.id"
-      >
-        <span class="taskFixed">❌</span>
-        <div class="task">
-          <p>{{ task.title }}</p>
-          <p>{{ task.priority }}</p>
-          <span class="description" v-if="task.description">{{
-            task.description
-          }}</span>
-        </div>
-        <div class="containerIcons">
-          <div class="edit" @click="editTask(task.id!)"></div>
-          <div class="trash"></div>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
