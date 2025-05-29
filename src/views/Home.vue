@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { defineComponent, ref } from "vue";
-import Navbar from "../components/landingPage/Navbar.vue";
 import Mainv1 from "../components/landingPage/Mainv1.vue";
-import StartSesion from "../components/login/StartSesion.vue";
+import Footer from "../components/landingPage/Footer.vue";
+import Header from "../components/landingPage/Header.vue";
 
 const dialog = ref<HTMLDialogElement>();
 
@@ -18,15 +18,12 @@ defineComponent({
 </script>
 
 <template>
+
   <div>
+    <Header />
     <Navbar @openDialog="openDialog" />
-    <Mainv1 />    
-    <dialog
-      ref="dialog"
-      class="modal"
-      style="margin: 20px; overflow: hidden"
-      closedby="any"
-    >
+    <Mainv1 />
+    <dialog ref="dialog" class="modal" style="margin: 20px; overflow: hidden" closedby="any">
       <StartSesion />
     </dialog>
   </div>
